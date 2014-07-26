@@ -1,11 +1,12 @@
 // SERPmetrics Node.JS SDK
 // by Adam Canady, July 2014
 
-var request = require('request'),
+var request  = require('request'),
     crypto   = require('crypto'),
-    url      = require('url');
+    url      = require('url'),
+    _        = require('lodash');
 
-exports.SMapi = function (credentials, timeout) {
+exports.SMapi = function (credentials, rate_limit, timeout) {
     return {
         VERSION: 'v1.0.0',
 
@@ -15,6 +16,8 @@ exports.SMapi = function (credentials, timeout) {
 
         credentials: credentials,
 
+        rate_limit: typeof timeout !== 'undefined' ? timeout : 30, // requests per second
+        milliseconds_per_request: 60000/rate_limit,
     /*    Adds a new keyword to the queue. engines should be passed as a list
      *    of {engine}_{locale} strings.
      *
@@ -201,7 +204,7 @@ exports.SMapi = function (credentials, timeout) {
      *    @param dict credentials
      *    @return mixed
      */
-        rest: function (options, credentials, cb) {
+        rest: _.throttle(function (options, credentials, cb) {
             var defaults = {
                 'method': 'POST',
                 'url': this.apiUrl,
@@ -264,6 +267,6 @@ exports.SMapi = function (credentials, timeout) {
 
             reqOptions.timeout = this.timeout;
             return request(reqOptions, cb);
-        }
+        }, this.milliseconds_per_request)
     };
 };
