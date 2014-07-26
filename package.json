@@ -1,0 +1,10 @@
+{
+  "name":"smapi",
+  "description": "Node.JS wrapper for the SERPmetrics.com API",
+  "repository": "https://github.com/AdamCanady/smapi",
+  "version": "0.0.2",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "request": "^2.39.0"
+  }
+}
